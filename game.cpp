@@ -3,6 +3,7 @@
 #include <glbinding/Binding.h>
 #include <glbinding/gl/gl.h>
 #include <iostream>
+#include "shader.h"
 
 using namespace gl;
 
@@ -12,6 +13,11 @@ int Game::Run()
         return -1;
 
     glbinding::Binding::initialize();
+
+    Shader s;
+    s.attachFile(GL_VERTEX_SHADER, "data/shader/vertex.glsl");
+    s.attachFile(GL_FRAGMENT_SHADER, "data/shader/fragment.glsl");
+    s.link();
 
     while (!m_bDone)
     {

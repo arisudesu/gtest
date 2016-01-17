@@ -9,9 +9,9 @@ class Game : public IClientEventHandler
     bool m_bDone;
 
 public:
-    Game()
-        : m_client(this),
-          m_bDone(false)
+    Game() :
+        m_client(this),
+        m_bDone(false)
     {};
     int  Run();
 

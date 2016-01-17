@@ -3,9 +3,9 @@
 #include "gleq.h"
 #include <stdexcept>
 
-Client::Client(IClientEventHandler *handler)
-    : m_window(0),
-      m_handler(handler)
+Client::Client(IClientEventHandler *handler):
+    m_window(0),
+    m_handler(handler)
 {
     if (!glfwInit())
         throw std::runtime_error("GLFW initialization failed!");
@@ -38,6 +38,7 @@ void Client::Terminate()
 {
     if (m_window != 0)
     {
+        glfwMakeContextCurrent(0);
         glfwDestroyWindow(m_window);
         m_window = 0;
     }

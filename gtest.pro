@@ -8,13 +8,17 @@ INCLUDEPATH +=
 SOURCES += \
     client.cpp \
     game.cpp \
-    main.cpp
+    main.cpp \
+    shader.cpp
 
 HEADERS += \
     gleq.h \
     client.h \
-    game.h
+    game.h \
+    shader.h
 
 LIBS += \
     -lglfw \
     -lglbinding
+
+CXXFLAGS += -Wall
