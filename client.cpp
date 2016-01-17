@@ -1,6 +1,7 @@
 #include "client.h"
 #define GLEQ_IMPLEMENTATION
 #include "gleq.h"
+#include <stdexcept>
 
 Client::Client(IClientEventHandler *handler)
     : m_window(0),
@@ -36,7 +37,10 @@ bool Client::Initialize(int width, int height, const std::string title)
 void Client::Terminate()
 {
     if (m_window != 0)
+    {
         glfwDestroyWindow(m_window);
+        m_window = 0;
+    }
 }
 
 void Client::ProcessEvents()

@@ -3,7 +3,7 @@ CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
-INCLUDEPATH += /usr/include/freetype2
+INCLUDEPATH +=
 
 SOURCES += \
     client.cpp \
