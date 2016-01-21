@@ -12,10 +12,12 @@ class Shader
 public:
     Shader();
     ~Shader();
-    void attach(GLenum shader_type, std::string source);
-    void attachFile(GLenum shader_type, std::string filename);
+    void attach(GLenum shader_type, const std::string source);
+    void attachFile(GLenum shader_type, const std::string filename);
     void link();
     void use();
+    GLint getAttributeLocation(const std::string name);
+    GLint getUniformLocation(const std::string name);
 };
 
 #endif // SHADER_H

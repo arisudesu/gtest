@@ -21,4 +21,4 @@ LIBS += \
     -lglfw \
     -lglbinding
 
-CXXFLAGS += -Wall
+CXXFLAGS += -Wall -Wsizeof-array-argument

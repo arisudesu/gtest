@@ -21,6 +21,17 @@ public:
 
     void ProcessEvents();
     void SwapBuffers();
+
+    enum KeyCode
+    {
+        KEY_W = GLFW_KEY_W,
+        KEY_S = GLFW_KEY_S,
+        KEY_A = GLFW_KEY_A,
+        KEY_D = GLFW_KEY_D,
+    };
+
+    bool HasKeyPressed(KeyCode key);
+
 };
 
 class IClientEventHandler

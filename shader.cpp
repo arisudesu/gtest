@@ -1,5 +1,7 @@
 #include "shader.h"
 #include <fstream>
+#include <iostream>
+#include <vector>
 
 Shader::Shader()
 {
@@ -11,7 +13,7 @@ Shader::~Shader()
     glDeleteProgram(handle);
 }
 
-void Shader::attach(GLenum shader_type, std::string source)
+void Shader::attach(GLenum shader_type, const std::string source)
 {
     GLuint shader = glCreateShader(shader_type);
     const GLchar* csource = source.c_str();
@@ -20,7 +22,7 @@ void Shader::attach(GLenum shader_type, std::string source)
     glAttachShader(handle, shader);
 }
 
-void Shader::attachFile(GLenum shader_type, std::string filename)
+void Shader::attachFile(GLenum shader_type, const std::string filename)
 {
     std::ifstream file(filename);
     std::string source = "", line = "";
@@ -42,4 +44,14 @@ void Shader::link()
 void Shader::use()
 {
     glUseProgram(handle);
+}
+
+GLint Shader::getAttributeLocation(const std::string name)
+{
+    return glGetAttribLocation(handle, name.c_str());
+}
+
+GLint Shader::getUniformLocation(const std::string name)
+{
+    return glGetUniformLocation(handle, name.c_str());
 }

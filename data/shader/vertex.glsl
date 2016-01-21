@@ -11,4 +11,3 @@ void main(void)
     fcolor = vec3(mod(floor(position.x), 16)/16, 1 - mod(floor(position.y), 16)/16, 0.5);
     gl_Position = viewm * modelm * vec4(position, 1.0);
 }
-

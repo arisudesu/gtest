@@ -72,3 +72,8 @@ void Client::SwapBuffers()
 {
     glfwSwapBuffers(m_window);
 }
+
+bool Client::HasKeyPressed(KeyCode key)
+{
+    return glfwGetKey(m_window, key);
+}
