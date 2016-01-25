@@ -6,8 +6,16 @@
 #include "shader.h"
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <thread>
 
 using namespace gl;
+
+/*void debugfunc(GLenum source​, GLenum type​, GLuint id​,
+               GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​)
+{
+    std::cout << message​ << std::endl;
+}*/
 
 int Game::Run()
 {
@@ -16,40 +24,62 @@ int Game::Run()
 
     glbinding::Binding::initialize();
 
-    /*Shader s;
+    std::cout << glGetString(GL_RENDERER) << glGetString(GL_VERSION) << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+    //glDebugMessageCallback(debugfunc, 0);
+    glViewport(0, 0, 800, 600);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearDepth(0.0);
+
+    Shader s;
     s.attachFile(GL_VERTEX_SHADER, "data/shader/vertex.glsl");
     s.attachFile(GL_FRAGMENT_SHADER, "data/shader/fragment.glsl");
     s.link();
     s.use();
 
-    glm::mat4 view(1.0);
-    glUniformMatrix4fv(s.getUniformLocation("mvp"), 1, GL_FALSE, glm::value_ptr(view));
+    GLint position = s.getAttributeLocation("position");
+    GLint color = s.getAttributeLocation("color");
 
 
-
-
-    const float mesh[][3] = {
-        { -1.0f, -1.0f, -1.0f },
-        { -1.0f, 1.0f, -1.0f },
-        { 1.0f, 1.0f, -1.0f },
-        { 1.0f, -1.0f, -1.0f },
-        { -1.0f, -1.0f, 1.0f },
-        { -1.0f, 1.0f, 1.0f },
-        { 1.0f, 1.0f, 1.0f },
-        { 1.0f, -1.0f, 1.0f }
+    static const float triangleMesh[] = {
+            /* 1 вершина, позиция: */ -1.0f, -1.0f, -2.0f, /* цвет: */ 1.0f, 0.0f, 0.0f,
+            /* 2 вершина, позиция: */  0.0f,  1.0f, -2.0f, /* цвет: */ 0.0f, 1.0f, 0.0f,
+            /* 3 вершина, позиция: */  1.0f, -1.0f, -2.0f, /* цвет: */ 0.0f, 0.0f, 1.0f
     };
 
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
+    static const float colors[] = {
+        0.0, 0.0, 0.0,
+        0.0, 0.0, 1.0,
+        1.0, 0.0, 0.0
+    };
 
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(mesh), mesh, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof mesh[0], 0);
-    glEnableVertexAttribArray(0);
+    GLuint meshVAO, meshVBO, colorVBO;
+    glGenVertexArrays(1, &meshVAO);
+    glBindVertexArray(meshVAO);
 
-    glViewport(0, 0, 800, 600);*/
-    glClearColor(0.4, 0.6, 0.9, 1.0);
-    glClearDepth(1.0);
+    glGenBuffers(1, &meshVBO);
+    glGenBuffers(1, &colorVBO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
+    glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), triangleMesh, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
+    glEnableVertexAttribArray(position);
+
+    glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
+    glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(float), colors, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+    glEnableVertexAttribArray(color);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glm::mat4 projection = glm::perspective(glm::radians(45.0), 800.0/600.0, 0.5, 5.0);
+    glUniformMatrix4fv(s.getUniformLocation("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
+
+
+    s.use();
+    glBindVertexArray(meshVAO);
 
     while (!m_bDone)
     {
@@ -66,7 +96,11 @@ int Game::Run()
 
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glDrawArrays(GL_TRIANGLES, 0, sizeof mesh / sizeof mesh[0]);
+
+
+
+
+        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 500);
 
         m_client.SwapBuffers();
     }
@@ -79,5 +113,9 @@ void Game::onWindowClose()
 }
 
 void Game::onKeyPress(int /*key*/, int /*scancode*/, int /*mods*/)
+{
+}
+
+void Game::onCursorMove(float, float)
 {
 }

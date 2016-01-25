@@ -20,6 +20,12 @@ void Shader::attach(GLenum shader_type, const std::string source)
     glShaderSource(shader, 1, &csource, 0);
     glCompileShader(shader);
     glAttachShader(handle, shader);
+
+    GLint loglen;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &loglen);
+    std::vector<char> buffer(loglen);
+    glGetShaderInfoLog(shader, loglen, 0, &buffer[0]);
+    std::cout << std::string(buffer.begin(), buffer.end()) << std::endl;
 }
 
 void Shader::attachFile(GLenum shader_type, const std::string filename)
@@ -39,6 +45,13 @@ void Shader::attachFile(GLenum shader_type, const std::string filename)
 void Shader::link()
 {
     glLinkProgram(handle);
+
+    GLint loglen;
+    glGetProgramiv(handle, GL_INFO_LOG_LENGTH, &loglen);
+    std::vector<char> buffer(loglen);
+    glGetProgramInfoLog(handle, loglen, 0, &buffer[0]);
+    std::cout << std::string(buffer.begin(), buffer.end()) << std::endl;
+
 }
 
 void Shader::use()

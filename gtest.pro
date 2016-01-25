@@ -22,3 +22,7 @@ LIBS += \
     -lglbinding
 
 CXXFLAGS += -Wall -Wsizeof-array-argument
+
+DISTFILES += \
+    data/shader/fragment.glsl \
+    data/shader/vertex.glsl

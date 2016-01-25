@@ -39,6 +39,7 @@ class IClientEventHandler
 public:
     virtual void onWindowClose() = 0;
     virtual void onKeyPress(int key, int scancode, int mods) = 0;
+    virtual void onCursorMove(float x, float y) = 0;
 };
 
 #endif // CLIENT_H

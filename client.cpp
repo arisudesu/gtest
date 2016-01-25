@@ -19,9 +19,9 @@ Client::~Client()
 
 bool Client::Initialize(int width, int height, const std::string title)
 {
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+    //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_RESIZABLE, false);
 
     m_window = glfwCreateWindow(width, height, title.c_str(), 0, 0);
@@ -61,6 +61,8 @@ void Client::ProcessEvents()
             m_handler->onKeyPress(event.key.key, event.key.scancode, event.key.mods);
             break;
 
+        case GLEQ_CURSOR_MOVED:
+            m_handler->onCursorMove(event.pos.x, event.pos.y);
         default:
             break;
         }
