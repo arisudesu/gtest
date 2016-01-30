@@ -1,21 +1,18 @@
 #include "game.h"
 #include "client.h"
+#include "shader.h"
+
+#include <iostream>
+
 #include <glbinding/Binding.h>
 #include <glbinding/gl/gl.h>
-#include <iostream>
-#include "shader.h"
+
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <thread>
 
 using namespace gl;
 
-/*void debugfunc(GLenum source​, GLenum type​, GLuint id​,
-               GLenum severity​, GLsizei length​, const GLchar* message​, const void* userParam​)
-{
-    std::cout << message​ << std::endl;
-}*/
 
 int Game::Run()
 {
@@ -24,69 +21,73 @@ int Game::Run()
 
     glbinding::Binding::initialize();
 
-    std::cout << glGetString(GL_RENDERER) << glGetString(GL_VERSION) << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-
-    //glDebugMessageCallback(debugfunc, 0);
     glViewport(0, 0, 800, 600);
     glClearColor(1.0, 1.0, 1.0, 1.0);
-    glClearDepth(0.0);
+    glClearDepth(1.0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_FRONT);
 
     Shader s;
     s.attachFile(GL_VERTEX_SHADER, "data/shader/vertex.glsl");
     s.attachFile(GL_FRAGMENT_SHADER, "data/shader/fragment.glsl");
     s.link();
-    s.use();
 
-    GLint position = s.getAttributeLocation("position");
-    GLint color = s.getAttributeLocation("color");
-
-
-    static const float triangleMesh[] = {
-            /* 1 вершина, позиция: */ -1.0f, -1.0f, -2.0f, /* цвет: */ 1.0f, 0.0f, 0.0f,
-            /* 2 вершина, позиция: */  0.0f,  1.0f, -2.0f, /* цвет: */ 0.0f, 1.0f, 0.0f,
-            /* 3 вершина, позиция: */  1.0f, -1.0f, -2.0f, /* цвет: */ 0.0f, 0.0f, 1.0f
+    const float size = 20.0;
+    const float skyboxVertData[][3] =
+    {
+        {-size, size, size}, { size, size, size}, { size,-size, size}, {-size,-size, size}, // front
+        { size, size,-size}, {-size, size,-size}, {-size,-size,-size}, { size,-size,-size}, // back
+        {-size, size,-size}, { size, size,-size}, { size, size, size}, {-size, size, size}, // top
+        { size,-size,-size}, {-size,-size,-size}, {-size,-size, size}, { size,-size, size}, // bottom
+        {-size, size,-size}, {-size, size, size}, {-size,-size, size}, {-size,-size,-size}, // left
+        { size, size, size}, { size, size,-size}, { size,-size,-size}, { size,-size, size}  // right
     };
 
-    static const float colors[] = {
-        0.0, 0.0, 0.0,
-        0.0, 0.0, 1.0,
-        1.0, 0.0, 0.0
+    const int skyboxIndData[] =
+    {
+        0, 3, 1,  1, 3, 2, // front
+        4, 7, 5,  5, 7, 6, // back
+        8,11, 9,  9,11,10, // top
+        12,15,13, 13,15,14, // bottom
+        16,19,17, 17,19,18, // left
+        20,23,21, 21,23,22  // right
     };
 
-    GLuint meshVAO, meshVBO, colorVBO;
-    glGenVertexArrays(1, &meshVAO);
-    glBindVertexArray(meshVAO);
+    GLuint vao, vbo, ibo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertData), skyboxVertData, GL_STATIC_DRAW);
 
-    glGenBuffers(1, &meshVBO);
-    glGenBuffers(1, &colorVBO);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
 
-    glBindBuffer(GL_ARRAY_BUFFER, meshVBO);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 6 * sizeof(float), triangleMesh, GL_STATIC_DRAW);
+    glVertexAttribPointer(s.getAttributeLocation("position"), 3, GL_FLOAT, GL_TRUE, 3*sizeof(float), 0);
+    glEnableVertexAttribArray(s.getAttributeLocation("position"));
 
-    glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), 0);
-    glEnableVertexAttribArray(position);
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(skyboxIndData), skyboxIndData, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, colorVBO);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(float), colors, GL_STATIC_DRAW);
+    //GLuint tex;
+    //glGenTextures();
 
-    glVertexAttribPointer(color, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-    glEnableVertexAttribArray(color);
+    float r = 0.0;
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glm::mat4 projection = glm::perspective(glm::radians(45.0), 800.0/600.0, 0.5, 5.0);
-    glUniformMatrix4fv(s.getUniformLocation("projectionMatrix"), 1, GL_FALSE, glm::value_ptr(projection));
-
-
-    s.use();
-    glBindVertexArray(meshVAO);
+    glm::mat4 perspective = glm::perspective(glm::radians(70.0), 800.0/600.0, 0.3, 50.0);
+    glm::mat4 proj =
+            perspective * glm::lookAt(glm::vec3(0.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
 
     while (!m_bDone)
     {
         m_client.ProcessEvents();
 
         if (m_client.HasKeyPressed(Client::KEY_W))
-        {}
+        {
+            r += 0.1;
+            proj = perspective * glm::lookAt(glm::vec3(0.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
+        }
         if (m_client.HasKeyPressed(Client::KEY_S))
         {}
         if (m_client.HasKeyPressed(Client::KEY_A))
@@ -97,10 +98,11 @@ int Game::Run()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        s.use();
+        glUniformMatrix4fv(s.getUniformLocation("proj"), 1, GL_FALSE, glm::value_ptr(proj));
 
-
-
-        glDrawArraysInstanced(GL_TRIANGLES, 0, 3, 500);
+        glBindVertexArray(vao);
+        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         m_client.SwapBuffers();
     }
