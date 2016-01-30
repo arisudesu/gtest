@@ -1,6 +1,6 @@
-#include "client.h"
 #define GLEQ_IMPLEMENTATION
-#include "gleq.h"
+#include "include/client.h"
+#include "include/gleq.h"
 #include <stdexcept>
 
 Client::Client(IClientEventHandler *handler):

@@ -6,16 +6,16 @@ CONFIG -= qt
 INCLUDEPATH +=
 
 SOURCES += \
-    client.cpp \
-    game.cpp \
-    main.cpp \
-    shader.cpp
+    src/client.cpp \
+    src/game.cpp \
+    src/main.cpp \
+    src/shader.cpp
 
 HEADERS += \
-    gleq.h \
-    client.h \
-    game.h \
-    shader.h
+    include/client.h \
+    include/game.h \
+    include/gleq.h \
+    include/shader.h
 
 LIBS += \
     -lglfw \

@@ -1,6 +1,6 @@
-#include "game.h"
-#include "client.h"
-#include "shader.h"
+#include "include/game.h"
+#include "include/client.h"
+#include "include/shader.h"
 
 #include <iostream>
 
