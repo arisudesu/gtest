@@ -1,9 +1,9 @@
-#version 330 core
+#version 120
 
 uniform mat4 proj;
 
-in vec3 position;
-out vec3 col;
+attribute vec3 position;
+varying vec3 col;
 
 void main(void)
 {

@@ -24,17 +24,17 @@ int Game::Run()
     glViewport(0, 0, 800, 600);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glClearDepth(1.0);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_FRONT);
+    //glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_CULL_FACE);
+    //glFrontFace(GL_CCW);
+    //glCullFace(GL_FRONT);
 
     Shader s;
     s.attachFile(GL_VERTEX_SHADER, "data/shader/vertex.glsl");
     s.attachFile(GL_FRAGMENT_SHADER, "data/shader/fragment.glsl");
     s.link();
 
-    const float size = 20.0;
+    const float size = 3.0;
     const float skyboxVertData[][3] =
     {
         {-size, size, size}, { size, size, size}, { size,-size, size}, {-size,-size, size}, // front
@@ -77,7 +77,7 @@ int Game::Run()
 
     glm::mat4 perspective = glm::perspective(glm::radians(70.0), 800.0/600.0, 0.3, 50.0);
     glm::mat4 proj =
-            perspective * glm::lookAt(glm::vec3(0.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
+            perspective * glm::lookAt(glm::vec3(10.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
 
     while (!m_bDone)
     {
@@ -86,7 +86,7 @@ int Game::Run()
         if (m_client.HasKeyPressed(Client::KEY_W))
         {
             r += 0.1;
-            proj = perspective * glm::lookAt(glm::vec3(0.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
+            proj = perspective * glm::lookAt(glm::vec3(10.0,0.0,0.0), glm::vec3(cos(r), sin(r), 0), glm::vec3(0.0, 0.0, 1.0));
         }
         if (m_client.HasKeyPressed(Client::KEY_S))
         {}
