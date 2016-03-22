@@ -10,7 +10,7 @@ class Game : public IClientEventHandler
 
 public:
     Game() :
-        m_client(this),
+        m_client(*this),
         m_bDone(false)
     {};
     int  Run();

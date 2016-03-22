@@ -10,13 +10,20 @@ class IClientEventHandler;
 class Client
 {
     GLFWwindow* m_window;
-    IClientEventHandler *m_handler;
+    IClientEventHandler& m_handler;
+
+    struct GLFWContainer
+    {
+        GLFWContainer() { glfwInit(); }
+        ~GLFWContainer() { glfwTerminate(); }
+    };
+    static const GLFWContainer m_glfw;
 
 public:
-    Client(IClientEventHandler *handler);
+    Client(IClientEventHandler& handler);
     ~Client();
 
-    bool Initialize(int width, int height, const std::string title);
+    bool Initialize(const int width, const int height, const std::string title);
     void Terminate();
 
     void ProcessEvents();

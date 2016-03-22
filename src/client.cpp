@@ -3,21 +3,20 @@
 #include "include/gleq.h"
 #include <stdexcept>
 
-Client::Client(IClientEventHandler *handler):
+const Client::GLFWContainer Client::m_glfw;
+
+Client::Client(IClientEventHandler& handler):
     m_window(0),
     m_handler(handler)
 {
-    if (!glfwInit())
-        throw std::runtime_error("GLFW initialization failed!");
 }
 
 Client::~Client()
 {
     Terminate();
-    glfwTerminate();
 }
 
-bool Client::Initialize(int width, int height, const std::string title)
+bool Client::Initialize(const int width, const int height, const std::string title)
 {
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, true);
@@ -56,15 +55,15 @@ void Client::ProcessEvents()
         switch (event.type)
         {
         case GLEQ_WINDOW_CLOSED:
-            m_handler->onWindowClose();
+            m_handler.onWindowClose();
             break;
 
         case GLEQ_KEY_PRESSED:
-            m_handler->onKeyPress(event.key.key, event.key.scancode, event.key.mods);
+            m_handler.onKeyPress(event.key.key, event.key.scancode, event.key.mods);
             break;
 
         case GLEQ_CURSOR_MOVED:
-            m_handler->onCursorMove(event.pos.x, event.pos.y);
+            m_handler.onCursorMove(event.pos.x, event.pos.y);
         default:
             break;
         }
