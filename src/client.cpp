@@ -1,5 +1,5 @@
 #define GLEQ_IMPLEMENTATION
-#include "include/client.h"
+#include "include/client.hpp"
 #include "include/gleq.h"
 #include <stdexcept>
 
@@ -59,7 +59,7 @@ void Client::ProcessEvents()
             break;
 
         case GLEQ_KEY_PRESSED:
-            m_handler.onKeyPress(event.key.key, event.key.scancode, event.key.mods);
+            m_handler.onKeyPress(static_cast<KeyCode>(event.key.key), event.key.scancode, event.key.mods);
             break;
 
         case GLEQ_CURSOR_MOVED:
