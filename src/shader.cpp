@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-Shader::Shader()
+Shader::Shader():
+    handle(glCreateProgram())
 {
-    handle = glCreateProgram();
 }
 
 Shader::~Shader()

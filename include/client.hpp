@@ -19,11 +19,15 @@ class Client
     };
     static const GLFWContainer m_glfw;
 
+private:
+    Client(const Client&);
+    const Client& operator=(const Client&);
+
 public:
     Client(IClientEventHandler& handler);
     ~Client();
 
-    bool Initialize(const int width, const int height, const std::string title);
+    bool Initialize(const int width, const int height, const std::string& title);
     void Terminate();
 
     void ProcessEvents();
@@ -50,6 +54,7 @@ public:
     virtual void onWindowClose() = 0;
     virtual void onKeyPress(Client::KeyCode key, int scancode, int mods) = 0;
     virtual void onCursorMove(float x, float y) = 0;
+    virtual ~IClientEventHandler() {};
 };
 
 #endif // CLIENT_H

@@ -4,6 +4,7 @@ class GuiMenuCallback
 {
 public:
     virtual void onItemSelect() = 0;
+    virtual ~GuiMenuCallback() {};
 };
 
 class GuiMainMenu
@@ -21,6 +22,7 @@ public:
     inline void navigatePrevious() { m_selectedItem = (m_selectedItem - 1 + m_numItems) % m_numItems; };
     inline void select() { m_callback.onItemSelect(); };
     inline int getSelectedItem() { return m_selectedItem; };
+    void Render();
 };
 
 

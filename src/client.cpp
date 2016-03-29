@@ -16,7 +16,7 @@ Client::~Client()
     Terminate();
 }
 
-bool Client::Initialize(const int width, const int height, const std::string title)
+bool Client::Initialize(const int width, const int height, const std::string& title)
 {
     //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, true);
