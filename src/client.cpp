@@ -1,9 +1,20 @@
 #define GLEQ_IMPLEMENTATION
 #include "include/client.hpp"
+#include <GLFW/glfw3.h>
 #include "include/gleq.h"
 #include <stdexcept>
 
 const Client::GLFWContainer Client::m_glfw;
+
+Client::GLFWContainer::GLFWContainer()
+{
+    glfwInit();
+}
+
+Client::GLFWContainer::~GLFWContainer()
+{
+    glfwTerminate();
+}
 
 Client::Client(IClientEventHandler& handler):
     m_window(0),
@@ -29,8 +40,8 @@ bool Client::Initialize(const int width, const int height, const std::string& ti
     if (!m_window)
         return false;
 
-    gleqTrackWindow(m_window);
-    glfwMakeContextCurrent(m_window);
+    gleqTrackWindow(static_cast<GLFWwindow*>(m_window));
+    glfwMakeContextCurrent(static_cast<GLFWwindow*>(m_window));
     glfwSwapInterval(1);
     return true;
 }
@@ -40,7 +51,7 @@ void Client::Terminate()
     if (m_window != 0)
     {
         glfwMakeContextCurrent(0);
-        glfwDestroyWindow(m_window);
+        glfwDestroyWindow(static_cast<GLFWwindow*>(m_window));
         m_window = 0;
     }
 }
@@ -73,10 +84,10 @@ void Client::ProcessEvents()
 
 void Client::SwapBuffers()
 {
-    glfwSwapBuffers(m_window);
+    glfwSwapBuffers(static_cast<GLFWwindow*>(m_window));
 }
 
 bool Client::HasKeyPressed(KeyCode key)
 {
-    return glfwGetKey(m_window, key);
+    return glfwGetKey(static_cast<GLFWwindow*>(m_window), key);
 }

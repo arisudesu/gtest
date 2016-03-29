@@ -4,18 +4,17 @@
 #define GLFW_INCLUDE_NONE
 
 #include <string>
-#include <GLFW/glfw3.h>
 
 class IClientEventHandler;
 class Client
 {
-    GLFWwindow* m_window;
+    void* m_window;
     IClientEventHandler& m_handler;
 
     struct GLFWContainer
     {
-        GLFWContainer() { glfwInit(); }
-        ~GLFWContainer() { glfwTerminate(); }
+        GLFWContainer();
+        ~GLFWContainer();
     };
     static const GLFWContainer m_glfw;
 
@@ -35,14 +34,14 @@ public:
 
     enum KeyCode
     {
-        KEY_W = GLFW_KEY_W,
-        KEY_S = GLFW_KEY_S,
-        KEY_A = GLFW_KEY_A,
-        KEY_D = GLFW_KEY_D,
-        KEY_UP = GLFW_KEY_UP,
-        KEY_DOWN = GLFW_KEY_DOWN,
-        KEY_SPACE = GLFW_KEY_SPACE,
-        KEY_RETURN = GLFW_KEY_ENTER,
+        KEY_W = 87,
+        KEY_S = 83,
+        KEY_A = 65,
+        KEY_D = 68,
+        KEY_UP = 265,
+        KEY_DOWN = 264,
+        KEY_SPACE = 32,
+        KEY_RETURN = 257,
     };
 
     bool HasKeyPressed(KeyCode key);

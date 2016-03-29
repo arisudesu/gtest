@@ -3,7 +3,6 @@
 #include "include/shader.hpp"
 #include "include/textrenderer.hpp"
 
-#include <chrono>
 #include <sstream>
 
 #include <glbinding/Binding.h>
@@ -33,9 +32,10 @@ int Game::Run()
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);*/
 
-    double time = glfwGetTime();
+    // TODO: use std::chrono
+    /*double time = glfwGetTime();
     unsigned int framecount = 0;
-    float fps = 0;
+    float fps = 0;*/
 
     static Font sans("data/fonts/menu.ttf", 14);
     static TextRenderer sansRender(sans);
@@ -48,17 +48,17 @@ int Game::Run()
 
         m_menu.Render();
 
-        if (glfwGetTime() - time >= 1)
+        /*if (glfwGetTime() - time >= 1)
         {
             fps = framecount / (float)(glfwGetTime() - time);
             time = glfwGetTime();
             framecount = 0;
         }
-        framecount ++;
+        framecount ++;*/
 
-        std::ostringstream strfps;
+        /*std::ostringstream strfps;
         strfps << "fps:" << fps;
-        sansRender.RenderText(strfps.str(), 0, 0);
+        sansRender.RenderText(strfps.str(), 0, 0);*/
 
         m_client.SwapBuffers();
     }
