@@ -1,9 +1,10 @@
 #include "include/game.hpp"
 #include "include/client.hpp"
 #include "include/shader.hpp"
+#include "include/textrenderer.hpp"
 
-#include <iostream>
-#include <iomanip>
+#include <chrono>
+#include <sstream>
 
 #include <glbinding/Binding.h>
 #include <glbinding/gl/gl.h>
@@ -27,11 +28,17 @@ int Game::Run()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    glDisable(GL_DEPTH_TEST);
+    /*glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CW);
+    glCullFace(GL_BACK);*/
 
+    double time = glfwGetTime();
+    unsigned int framecount = 0;
+    float fps = 0;
+
+    static Font sans("data/fonts/menu.ttf", 14);
+    static TextRenderer sansRender(sans);
 
     while (!m_bDone)
     {
@@ -40,6 +47,18 @@ int Game::Run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         m_menu.Render();
+
+        if (glfwGetTime() - time >= 1)
+        {
+            fps = framecount / (float)(glfwGetTime() - time);
+            time = glfwGetTime();
+            framecount = 0;
+        }
+        framecount ++;
+
+        std::ostringstream strfps;
+        strfps << "fps:" << fps;
+        sansRender.RenderText(strfps.str(), 0, 0);
 
         m_client.SwapBuffers();
     }
@@ -56,17 +75,14 @@ void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/)
     switch (key)
     {
     case Client::KeyCode::KEY_UP:
-        std::cout << "up" << std::endl;
         m_menu.navigatePrevious();
         break;
 
     case Client::KeyCode::KEY_DOWN:
-        std::cout << "down" << std::endl;
         m_menu.navigateNext();
         break;
 
-    case Client::KeyCode::KEY_SPACE:
-        std::cout << "space" << std::endl;
+    case Client::KeyCode::KEY_RETURN:
         m_menu.select();
         break;
     }
@@ -78,8 +94,6 @@ void Game::onCursorMove(float, float)
 
 void Game::onItemSelect()
 {
-    std::cout << "selected menu item: " << m_menu.getSelectedItem() << std::endl;
-
     switch (m_menu.getSelectedItem())
     {
     case 0:

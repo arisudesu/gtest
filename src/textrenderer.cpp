@@ -5,7 +5,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-Font::Font(const std::string& filename, int glyph_size)
+Font::Font(const std::string& filename, unsigned int glyph_size):
+    m_glyph_size(glyph_size)
 {
     if (FT_Init_FreeType(&m_ft))
     {
@@ -35,12 +36,23 @@ unsigned int Font::GetGlyphWidth(unsigned long codepoint)
     return m_face->glyph->bitmap.width;
 }
 
+unsigned int Font::GetGlyphTop(unsigned long codepoint)
+{
+    FT_Load_Char(m_face, codepoint, FT_LOAD_RENDER);
+    return m_face->glyph->bitmap_top;
+}
+
 unsigned int Font::GetGlyphHeight(unsigned long codepoint)
 {
     FT_Load_Char(m_face, codepoint, FT_LOAD_RENDER);
     return m_face->glyph->bitmap.rows;
 }
 
+unsigned int Font::GetGlyphAdvance(unsigned long codepoint)
+{
+    FT_Load_Char(m_face, codepoint, FT_LOAD_RENDER);
+    return (float)m_face->glyph->advance.x / 64.0;
+}
 
 TextRenderer::TextRenderer(Font& font):
     m_font(font),
@@ -54,8 +66,8 @@ TextRenderer::TextRenderer(Font& font):
 
     const float texcoord[][2] =
     {
-        {0, 1}, {1, 1}, {0, 0},
-        {1, 1}, {1, 0}, {0, 0}
+        {0, 0}, {1, 0}, {0, 1},
+        {1, 0}, {1, 1}, {0, 1}
     };
     glGenBuffers(1, &m_texcoord);
     glBindBuffer(GL_ARRAY_BUFFER, m_texcoord);
@@ -75,7 +87,7 @@ TextRenderer::~TextRenderer()
 
 void TextRenderer::RenderText(const std::string& text, int x, int y)
 {
-    float pos = 0;
+    float pos = 0.0;
 
     glBindTexture(GL_TEXTURE_2D, m_tex);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -85,27 +97,30 @@ void TextRenderer::RenderText(const std::string& text, int x, int y)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, 0x2600);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, 0x2600);
 
-    glActiveTexture(GL_TEXTURE0);
-
-    glm::mat4 proj = glm::ortho(0.0 - (double)x, 800.0 - (double)x, 0.0 - (double)y, 600.0 - (double)y);
-
     m_shader.use();
+
+    glActiveTexture(GL_TEXTURE0);
     glUniform1i(m_shader.getUniformLocation("texture"), 0);
+
+    glm::mat4 proj = glm::ortho(0.0 - (double)x, 800.0 - (double)x, 600.0 - (double)y, 0.0 - (double)y);
     glUniformMatrix4fv(m_shader.getUniformLocation("transform"), 1, GL_FALSE, glm::value_ptr(proj));
+
+    const float baseline = m_font.GetFontBaseline();
 
     for (auto iter = text.begin(); iter != text.end(); ++iter)
     {
         const float h = m_font.GetGlyphHeight(*iter),
-                    w = m_font.GetGlyphWidth(*iter);
+                    w = m_font.GetGlyphWidth(*iter),
+                    t = m_font.GetGlyphTop(*iter);
 
         const float quad[][3] =
         {
-            { pos  , 0, 0 },
-            { pos+w, 0, 0 },
-            { pos  , h, 0 },
-            { pos+w, 0, 0 },
-            { pos+w, h, 0 },
-            { pos  , h, 0 }
+            { pos  ,  baseline - t, 0 },
+            { pos+w,  baseline - t, 0 },
+            { pos  ,  baseline - t + h, 0 },
+            { pos+w,  baseline - t, 0 },
+            { pos+w,  baseline - t + h, 0 },
+            { pos  ,  baseline - t + h, 0 }
         };
         glBindBuffer(GL_ARRAY_BUFFER, m_quad);
         glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
@@ -131,6 +146,6 @@ void TextRenderer::RenderText(const std::string& text, int x, int y)
         );
 
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        pos += w;
+        pos += m_font.GetGlyphAdvance(*iter);
     }
 }

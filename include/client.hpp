@@ -42,6 +42,7 @@ public:
         KEY_UP = GLFW_KEY_UP,
         KEY_DOWN = GLFW_KEY_DOWN,
         KEY_SPACE = GLFW_KEY_SPACE,
+        KEY_RETURN = GLFW_KEY_ENTER,
     };
 
     bool HasKeyPressed(KeyCode key);
