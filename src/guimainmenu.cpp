@@ -6,46 +6,22 @@ void GuiMainMenu::Render()
     static Font sans("data/fonts/menu.ttf", 24);
     static TextRenderer sansRender(sans);
 
-    if (getSelectedItem() == 0)
+    static const std::array<std::string, 5> items
     {
-        sansRender.RenderText("[ Start ]", 50, 400);
-    }
-    else
-    {
-        sansRender.RenderText("Start", 50, 400);
-    }
+        "Start", "Options", "About", "Debug", "Exit"
+    };
 
-    if (getSelectedItem() == 1)
+    unsigned int count = 0;
+    for (auto i: items)
     {
-        sansRender.RenderText("[ Options ]", 50, 432);
-    }
-    else
-    {
-        sansRender.RenderText("Options", 50, 432);
-    }
-
-    if (getSelectedItem() == 2)
-    {
-        sansRender.RenderText("[ About ]", 50, 464);
-    }
-    else
-    {
-        sansRender.RenderText("About", 50, 464);
-    }
-    if (getSelectedItem() == 3)
-    {
-        sansRender.RenderText("[ Debug ]", 50, 496);
-    }
-    else
-    {
-        sansRender.RenderText("Debug", 50, 496);
-    }
-    if (getSelectedItem() == 4)
-    {
-        sansRender.RenderText("[ Exit ]", 50, 528);
-    }
-    else
-    {
-        sansRender.RenderText("Exit", 50, 528);
+        if (getSelectedItem() == count)
+        {
+            sansRender.RenderText("[ " + i + " ]", 39, 400 + count * 30);
+        }
+        else
+        {
+            sansRender.RenderText(i, 50, 400 + count * 30);
+        }
+        ++ count;
     }
 }
