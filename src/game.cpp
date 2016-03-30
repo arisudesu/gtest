@@ -47,7 +47,7 @@ int Game::Run()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        m_menu.Render();
+        m_activeMenu->Render();
 
         if (clibraries::glfwGetTime() - time >= 1)
         {
@@ -76,15 +76,15 @@ void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/)
     switch (key)
     {
     case Client::KEY_UP:
-        m_menu.navigatePrevious();
+        m_activeMenu->navigatePrevious();
         break;
 
     case Client::KEY_DOWN:
-        m_menu.navigateNext();
+        m_activeMenu->navigateNext();
         break;
 
     case Client::KEY_RETURN:
-        m_menu.select();
+        m_activeMenu->select();
         break;
     }
 }
@@ -93,15 +93,28 @@ void Game::onCursorMove(float, float)
 {
 }
 
-void Game::onItemSelect()
+void Game::onItemSelect(GuiMainMenu& o)
 {
-    switch (m_menu.getSelectedItem())
+    if (&o == &m_menu)
     {
-    case 0:
-        break;
+        switch (m_activeMenu->getSelectedItem())
+        {
+        case 4:
+            m_activeMenu = &m_exitmenu;
+            break;
+        }
+    }
 
-    case 4:
-        m_bDone = true;
-        break;
+    if (&o == &m_exitmenu)
+    {
+        switch (m_activeMenu->getSelectedItem())
+        {
+        case 0:
+            m_bDone = true;
+
+        case 1:
+            m_activeMenu = &m_menu;
+            break;
+        }
     }
 }
