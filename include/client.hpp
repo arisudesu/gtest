@@ -2,13 +2,16 @@
 #define CLIENT_H
 
 #define GLFW_INCLUDE_NONE
-
+namespace clibraries
+{
+    #include <GLFW/glfw3.h>
+}
 #include <string>
 
 class IClientEventHandler;
 class Client
 {
-    void* m_window;
+    clibraries::GLFWwindow* m_window;
     IClientEventHandler& m_handler;
 
     struct GLFWContainer

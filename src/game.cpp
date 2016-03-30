@@ -1,7 +1,6 @@
 #include "include/game.hpp"
 #include "include/client.hpp"
 #include "include/shader.hpp"
-#include "include/textrenderer.hpp"
 
 #include <sstream>
 
@@ -37,8 +36,8 @@ int Game::Run()
     unsigned int framecount = 0;
     float fps = 0;*/
 
-    static Font sans("data/fonts/menu.ttf", 14);
-    static TextRenderer sansRender(sans);
+    /*static Font sans("data/fonts/menu.ttf", 14);
+    static TextRenderer sansRender(sans);*/
 
     while (!m_bDone)
     {

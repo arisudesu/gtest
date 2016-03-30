@@ -1,12 +1,17 @@
+
+#include <glm/gtc/type_ptr.hpp>
 #include "include/textrenderer.hpp"
 #include <stdexcept>
 
+using namespace clibraries;
 #include <glm/mat4x4.hpp>
-#include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+
 Font::Font(const std::string& filename, unsigned int glyph_size):
-    m_glyph_size(glyph_size)
+    m_glyph_size(glyph_size),
+    m_ft(0),
+    m_face(0)
 {
     if (FT_Init_FreeType(&m_ft))
     {
