@@ -16,15 +16,20 @@
 
 using namespace gl;
 
+Game::Game():
+    m_client(800, 600, "Test", *this),
+    m_menu(*this, true),
+    m_exitmenu(*this, false),
+    m_bDone(false),
+    m_activeMenu(&m_menu)
+{
+    glbinding::Binding::initialize();
+}
+
 int Game::Run()
 {
-    if (!m_client.Initialize(800, 600, "Test"))
-        return -1;
-
-    glbinding::Binding::initialize();
-
     glViewport(0, 0, 800, 600);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(1.0, 1.0, 0.8, 1.0);
     glClearDepth(1.0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -182,6 +187,9 @@ void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/)
     case Client::KEY_RETURN:
         m_activeMenu->select();
         break;
+
+    default:
+        ;
     }
 }
 

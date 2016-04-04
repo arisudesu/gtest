@@ -16,11 +16,11 @@ using namespace gl;
 
 class Font
 {
+    unsigned int m_glyph_size;
     clibraries::FT_Library m_ft;
     clibraries::FT_Face m_face;
     Font(const Font&);
     const Font& operator=(const Font&);
-    unsigned int m_glyph_size;
 public:
     Font(const std::string& filename, unsigned int glyph_size);
     ~Font();

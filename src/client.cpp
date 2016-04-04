@@ -18,10 +18,11 @@ Client::GLFWContainer::~GLFWContainer()
     glfwTerminate();
 }
 
-Client::Client(IClientEventHandler& handler):
+Client::Client(const int width, const int height, const std::string& title, IClientEventHandler& handler):
     m_window(0),
     m_handler(handler)
 {
+    Initialize(width, height, title);
 }
 
 Client::~Client()
@@ -71,6 +72,7 @@ void Client::ProcessEvents()
             break;
 
         case GLEQ_KEY_PRESSED:
+        case GLEQ_KEY_REPEATED:
             m_handler.onKeyPress(static_cast<KeyCode>(event.key.key), event.key.scancode, event.key.mods);
             break;
 

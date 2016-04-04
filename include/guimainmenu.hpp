@@ -16,10 +16,10 @@ class GuiMainMenu
 
 public:
     GuiMainMenu(GuiMenuCallback& callback, bool b):
+        m_numItems(b ? 5 : 2),
         m_selectedItem(0),
         m_callback(callback),
-        m_b(b),
-        m_numItems(b ? 5 : 2)
+        m_b(b)
     {}
     inline void navigateNext() { m_selectedItem = (m_selectedItem + 1) % m_numItems; };
     inline void navigatePrevious() { m_selectedItem = (m_selectedItem - 1 + m_numItems) % m_numItems; };

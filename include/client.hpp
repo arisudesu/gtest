@@ -26,7 +26,7 @@ private:
     const Client& operator=(const Client&);
 
 public:
-    Client(IClientEventHandler& handler);
+    Client(const int width, const int height, const std::string& title, IClientEventHandler& handler);
     ~Client();
 
     bool Initialize(const int width, const int height, const std::string& title);

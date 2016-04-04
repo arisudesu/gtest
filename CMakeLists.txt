@@ -16,7 +16,7 @@ set(SOURCES
 )
 
 set(CMAKE_CXX_COMPILER g++)
-set(CMAKE_CXX_FLAGS "-g -march=native -std=c++11 -pedantic -Wextra -Weffc++")
+set(CMAKE_CXX_FLAGS "-g -march=native -std=c++11 -pedantic -Wall -Wextra -Weffc++")
 
 pkg_search_module(GLFW REQUIRED glfw3)
 pkg_search_module(FT2 REQUIRED freetype2)

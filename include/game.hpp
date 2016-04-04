@@ -11,14 +11,10 @@ class Game : public IClientEventHandler, public GuiMenuCallback
     GuiMainMenu m_exitmenu;
     bool m_bDone;
     GuiMainMenu* m_activeMenu;
+    Game(const Game&);
+    Game operator=(const Game&);
 public:
-    Game() :
-        m_client(*this),
-        m_menu(*this, true),
-        m_exitmenu(*this, false),
-        m_activeMenu(&m_menu),
-        m_bDone(false)
-    {};
+    Game();
     int  Run();
 
     void onWindowClose();
