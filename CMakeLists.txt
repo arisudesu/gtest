@@ -12,6 +12,7 @@ set(SOURCES
     ${SOURCE_DIR}/guimainmenu.cpp
     ${SOURCE_DIR}/shader.cpp
     ${SOURCE_DIR}/textrenderer.cpp
+    ${SOURCE_DIR}/gameplay.cpp
     ${SOURCE_DIR}/main.cpp
 )
 

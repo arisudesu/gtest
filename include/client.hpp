@@ -45,6 +45,7 @@ public:
         KEY_DOWN = 264,
         KEY_SPACE = 32,
         KEY_RETURN = 257,
+        KEY_ESCAPE = GLFW_KEY_ESCAPE,
     };
 
     bool HasKeyPressed(KeyCode key);

@@ -12,11 +12,11 @@ class GuiMainMenu
     const int m_numItems;
     unsigned int m_selectedItem;
     GuiMenuCallback& m_callback;
-    bool m_b;
+    int m_b;
 
 public:
-    GuiMainMenu(GuiMenuCallback& callback, bool b):
-        m_numItems(b ? 5 : 2),
+    GuiMainMenu(GuiMenuCallback& callback, int b):
+        m_numItems(b == 0 ? 5 : (b == 1 ? 2 : 2)),
         m_selectedItem(0),
         m_callback(callback),
         m_b(b)
