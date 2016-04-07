@@ -25,6 +25,12 @@ Client::Client(const int width, const int height, const std::string& title, ICli
     Initialize(width, height, title);
 }
 
+Client::Client(Client&& o):
+    m_window(o.m_window),
+    m_handler(o.m_handler)
+{
+}
+
 Client::~Client()
 {
     Terminate();

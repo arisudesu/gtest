@@ -9,7 +9,7 @@ set(BINARY gtest.bin)
 set(SOURCES
     ${SOURCE_DIR}/client.cpp
     ${SOURCE_DIR}/game.cpp
-    ${SOURCE_DIR}/guimainmenu.cpp
+    ${SOURCE_DIR}/guimenu.cpp
     ${SOURCE_DIR}/shader.cpp
     ${SOURCE_DIR}/textrenderer.cpp
     ${SOURCE_DIR}/gameplay.cpp

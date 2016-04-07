@@ -2,17 +2,17 @@
 #define GAME_H
 
 #include "include/client.hpp"
-#include "include/guimainmenu.hpp"
+#include "include/guimenu.hpp"
 #include "include/gameplay.hpp"
 
 class Game : public IClientEventHandler, public GuiMenuCallback
 {
     Client m_client;
     GuiMainMenu m_menu;
-    GuiMainMenu m_exitmenu;
-    GuiMainMenu m_pausemenu;
+    GuiExitMenu m_exitmenu;
+    GuiPauseMenu m_pausemenu;
     bool m_bDone;
-    GuiMainMenu* m_activeMenu;
+    GuiMenuBase* m_activeMenu;
     GamePlay *m_gp;
     bool m_gpPaused;
 
@@ -25,7 +25,13 @@ public:
     void onWindowClose();
     void onKeyPress(Client::KeyCode, int, int);
     void onCursorMove(float, float);
+
+    void OnItemSelect(GuiMenuBase&);
+    void OnItemSelect(GuiMainMenu&);
+
     void onItemSelect(GuiMainMenu&);
+    void onItemSelect(GuiExitMenu&);
+    void onItemSelect(GuiMenuBase&);
 };
 
 #endif // GAME_H

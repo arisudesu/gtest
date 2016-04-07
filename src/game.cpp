@@ -15,17 +15,33 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 using namespace gl;
+using namespace std::placeholders;
+
+Client get_client_with_context(IClientEventHandler& e)
+{
+    Client c(400, 300, "rvalue test", e);
+    std::cout << "Address of c inside get_client_with_context: " << &c << std::endl;
+    glbinding::Binding::initialize();
+    return c;
+}
 
 Game::Game():
-    m_client(800, 600, "Test", *this),
-    m_menu(*this, 0),
-    m_exitmenu(*this, 1),
-    m_pausemenu(*this, 2),
+    m_client(get_client_with_context(*this)),
+    m_menu(std::bind(
+        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1)
+    ),
+    m_exitmenu(std::bind(
+        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1)
+    ),
+    m_pausemenu(std::bind(
+        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1
+    )),
     m_bDone(false),
     m_activeMenu(&m_menu),
     m_gp(nullptr),
     m_gpPaused(false)
 {
+    std::cout << "Address of m_client: " << &m_client << std::endl;
     glbinding::Binding::initialize();
 }
 
@@ -177,23 +193,40 @@ void Game::onCursorMove(float, float)
 {
 }
 
+void Game::OnItemSelect(GuiMenuBase &/*o*/)
+{
+    std::cout << "bound function" << std::endl;
+}
+
+void Game::OnItemSelect(GuiMainMenu &/*o*/)
+{
+    std::cout << "bound function 2" << std::endl;
+}
+
+void Game::onItemSelect(GuiExitMenu& /*o*/)
+{
+}
+
 void Game::onItemSelect(GuiMainMenu& o)
 {
-    if (&o == &m_menu)
+    std::cout << "mainmenu" << std::endl;
+    switch (o.getSelectedItem())
     {
-        switch (o.getSelectedItem())
-        {
-        case 0:
-            m_activeMenu = nullptr;
-            m_gpPaused = false;
-            m_gp = new GamePlay;
-            break;
+    case 0:
+        m_activeMenu = nullptr;
+        m_gpPaused = false;
+        m_gp = new GamePlay;
+        break;
 
-        case 4:
-            m_activeMenu = &m_exitmenu;
-            break;
-        }
+    case 4:
+        m_activeMenu = &m_exitmenu;
+        break;
     }
+}
+
+void Game::onItemSelect(GuiMenuBase& o)
+{
+    std::cout << "generic menu" << std::endl;
 
     if (&o == &m_exitmenu)
     {
