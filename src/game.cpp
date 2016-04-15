@@ -5,6 +5,7 @@
 #include "include/shader.hpp"
 #include "include/textrenderer.hpp"
 
+#include <fstream>
 #include <iostream>
 #include <sstream>
 
@@ -14,15 +15,99 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <AL/alc.h>
+#include <AL/al.h>
+
 using namespace gl;
 using namespace std::placeholders;
 
 Client get_client_with_context(IClientEventHandler& e)
 {
-    Client c(400, 300, "rvalue test", e);
-    std::cout << "Address of c inside get_client_with_context: " << &c << std::endl;
+    Client tmp(800, 600, "rvalue test", e);
     glbinding::Binding::initialize();
-    return c;
+    return tmp;
+}
+
+ALuint loadWavFile(const std::string& filename)
+{
+#pragma pack(1)
+    struct RIFF_Header {
+        char chunkID[4];
+        long chunkSize;//size not including chunkSize or chunkID
+        char format[4];
+    } riff_header;
+
+    struct WAVE_Format {
+        char subChunkID[4];
+        long subChunkSize;
+        short audioFormat;
+        short numChannels;
+        long sampleRate;
+        long byteRate;
+        short blockAlign;
+        short bitsPerSample;
+    } wave_header;
+
+    struct WAVE_Data {
+        char subChunkID[4]; //should contain the word data
+        long subChunk2Size; //Stores the size of the data block
+    } wav_data;
+#pragma pack(0)
+
+    std::ifstream in(filename, std::ios::binary);
+    if (in)
+    {
+        in.read((char*)&riff_header, sizeof riff_header);
+        in.read((char*)&wave_header, sizeof wave_header);
+        in.read((char*)&wav_data, sizeof wav_data);
+
+        if (!(
+            wav_data.subChunkID[0] == 'd' &&
+            wav_data.subChunkID[1] == 'a' &&
+            wav_data.subChunkID[2] == 't' &&
+            wav_data.subChunkID[3] == 'a'
+        ))
+        {
+            throw std::runtime_error("not wav data");
+        }
+
+        char* data = new char[wav_data.subChunk2Size];
+        in.read(data, wav_data.subChunk2Size);
+
+        ALsizei freq = wave_header.sampleRate;
+        ALenum format = AL_FORMAT_STEREO16;
+
+        std::cout << wave_header.numChannels << " " << wave_header.bitsPerSample << std::endl;
+        if (wave_header.numChannels == 1)
+        {
+            if (wave_header.bitsPerSample == 8)
+            {
+                format = AL_FORMAT_MONO8;
+            }
+            else if (wave_header.bitsPerSample == 16)
+            {
+                format = AL_FORMAT_MONO16;
+            }
+        }
+        else if (wave_header.numChannels == 2)
+        {
+            if (wave_header.bitsPerSample == 8)
+            {
+                format = AL_FORMAT_STEREO8;
+            }
+            else if (wave_header.bitsPerSample == 16)
+            {
+                format = AL_FORMAT_STEREO16;
+            }
+        }
+
+        ALuint buffer;
+        alGenBuffers(1, &buffer);
+        alBufferData(buffer, format, data, wav_data.subChunk2Size, freq);
+
+        return buffer;
+    }
+    return 0;
 }
 
 Game::Game():
@@ -40,10 +125,7 @@ Game::Game():
     m_activeMenu(&m_menu),
     m_gp(nullptr),
     m_gpPaused(false)
-{
-    std::cout << "Address of m_client: " << &m_client << std::endl;
-    glbinding::Binding::initialize();
-}
+{ }
 
 int Game::Run()
 {
@@ -94,8 +176,46 @@ int Game::Run()
     //std::cout << glCheckFramebufferStatus(GL_FRAMEBUFFER) << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    ALCdevice *dev;
+    ALCcontext *alc;
+
+    dev = alcOpenDevice(NULL);
+    alc = alcCreateContext(dev, NULL);
+
+    alcMakeContextCurrent(alc);
+
+
+    alListener3f(AL_POSITION, 0, 0, 1.0f);
+    alListener3f(AL_VELOCITY, 0, 0, 0);
+    ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+    alListenerfv(AL_ORIENTATION, listenerOri);
+
+    std::cout << alGetString(alGetError()) << std::endl;
+
+    ALuint source;
+    alGenSources(1, &source);
+    alSourcef(source, AL_PITCH, 1);
+    alSourcef(source, AL_GAIN, 1);
+    alSource3f(source, AL_POSITION, 0, 0, 0);
+    alSource3f(source, AL_VELOCITY, 0, 0, 0);
+    alSourcei(source, AL_LOOPING, AL_TRUE);
+    std::cout << alGetString(alGetError()) << std::endl;
+
+    ALuint buffer = loadWavFile("data/audio/menu.wav");
+
+    std::cout << alGetString(alGetError()) << std::endl;
+
+    alSourcei(source, AL_BUFFER, buffer);
+    alSourcePlay(source);
+    std::cout << alGetString(alGetError()) << std::endl;
+    std::cout << source << " " << buffer << std::endl;
+
     while (!m_bDone)
     {
+        //ALint state;
+        //alGetSourcei(source, AL_SOURCE_STATE, &state);
+        //std::cout << state << std::endl;
+
         m_client.ProcessEvents();
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mainFbo);

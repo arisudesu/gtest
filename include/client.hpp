@@ -22,7 +22,7 @@ class Client
     static const GLFWContainer m_glfw;
 
 private:
-    Client(const Client&);
+    Client(const Client&) = delete;
     const Client& operator=(const Client&);
 
 public:
