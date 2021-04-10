@@ -240,7 +240,7 @@ int Game::Run() {
 }
 
 void Game::onWindowClose() {
-    //m_bDone = true;
+    m_bDone = true;
 }
 
 void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/) {
