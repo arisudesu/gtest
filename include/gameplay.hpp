@@ -1,14 +1,16 @@
 #include "include/shader.hpp"
 
-class GamePlay
-{
+class GamePlay {
     GLuint vao;
     Shader s;
     float r;
 
 public:
     GamePlay();
+
     ~GamePlay();
+
     void Update();
+
     void Render();
 };

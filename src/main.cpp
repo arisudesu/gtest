@@ -1,19 +1,15 @@
 #include "include/game.hpp"
 #include <iostream>
 
-int main()
-{
-    try
-    {
+int main() {
+    try {
         Game g;
         return g.Run();
     }
-    catch (std::exception& e)
-    {
+    catch (std::exception &e) {
         std::cout << "Exception caught: " << e.what() << std::endl;
     }
-    catch (...)
-    {
+    catch (...) {
         std::cout << "Unknown exception" << std::endl;
     }
 }

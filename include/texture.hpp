@@ -6,25 +6,26 @@
 
 class Texture;
 
-class AbstractTextureLoader
-{
+class AbstractTextureLoader {
 public:
     virtual Texture::TextureFormat GetFormat();
+
     virtual int GetWidth() = 0;
+
     virtual int GetHeight() = 0;
+
     virtual const vector<unsigned char> GetData() = 0;
 };
 
-class Texture
-{
+class Texture {
     GLuint m_handle;
 
 public:
-    Texture(const AbstractTextureLoader& loader);
+    Texture(const AbstractTextureLoader &loader);
+
     void Bind();
 
-    enum TextureFormat
-    {
+    enum TextureFormat {
         RGBA = GL_RGBA,
     };
 };

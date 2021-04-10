@@ -21,15 +21,13 @@
 using namespace gl;
 using namespace std::placeholders;
 
-Client get_client_with_context(IClientEventHandler& e)
-{
+Client get_client_with_context(IClientEventHandler &e) {
     Client tmp(800, 600, "rvalue test", e);
     glbinding::Binding::initialize();
     return tmp;
 }
 
-ALuint loadWavFile(const std::string& filename)
-{
+ALuint loadWavFile(const std::string &filename) {
 #pragma pack(1)
     struct RIFF_Header {
         char chunkID[4];
@@ -55,48 +53,37 @@ ALuint loadWavFile(const std::string& filename)
 #pragma pack(0)
 
     std::ifstream in(filename, std::ios::binary);
-    if (in)
-    {
-        in.read((char*)&riff_header, sizeof riff_header);
-        in.read((char*)&wave_header, sizeof wave_header);
-        in.read((char*)&wav_data, sizeof wav_data);
+    if (in) {
+        in.read((char *) &riff_header, sizeof riff_header);
+        in.read((char *) &wave_header, sizeof wave_header);
+        in.read((char *) &wav_data, sizeof wav_data);
 
         if (!(
-            wav_data.subChunkID[0] == 'd' &&
-            wav_data.subChunkID[1] == 'a' &&
-            wav_data.subChunkID[2] == 't' &&
-            wav_data.subChunkID[3] == 'a'
-        ))
-        {
+                wav_data.subChunkID[0] == 'd' &&
+                wav_data.subChunkID[1] == 'a' &&
+                wav_data.subChunkID[2] == 't' &&
+                wav_data.subChunkID[3] == 'a'
+        )) {
             throw std::runtime_error("not wav data");
         }
 
-        char* data = new char[wav_data.subChunk2Size];
+        char *data = new char[wav_data.subChunk2Size];
         in.read(data, wav_data.subChunk2Size);
 
         ALsizei freq = wave_header.sampleRate;
         ALenum format = AL_FORMAT_STEREO16;
 
         std::cout << wave_header.numChannels << " " << wave_header.bitsPerSample << std::endl;
-        if (wave_header.numChannels == 1)
-        {
-            if (wave_header.bitsPerSample == 8)
-            {
+        if (wave_header.numChannels == 1) {
+            if (wave_header.bitsPerSample == 8) {
                 format = AL_FORMAT_MONO8;
-            }
-            else if (wave_header.bitsPerSample == 16)
-            {
+            } else if (wave_header.bitsPerSample == 16) {
                 format = AL_FORMAT_MONO16;
             }
-        }
-        else if (wave_header.numChannels == 2)
-        {
-            if (wave_header.bitsPerSample == 8)
-            {
+        } else if (wave_header.numChannels == 2) {
+            if (wave_header.bitsPerSample == 8) {
                 format = AL_FORMAT_STEREO8;
-            }
-            else if (wave_header.bitsPerSample == 16)
-            {
+            } else if (wave_header.bitsPerSample == 16) {
                 format = AL_FORMAT_STEREO16;
             }
         }
@@ -110,25 +97,23 @@ ALuint loadWavFile(const std::string& filename)
     return 0;
 }
 
-Game::Game():
-    m_client(get_client_with_context(*this)),
-    m_menu(std::bind(
-        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1)
-    ),
-    m_exitmenu(std::bind(
-        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1)
-    ),
-    m_pausemenu(std::bind(
-        static_cast<void (Game::*)(GuiMenuBase&)>(&Game::OnItemSelect), this, _1
-    )),
-    m_bDone(false),
-    m_activeMenu(&m_menu),
-    m_gp(nullptr),
-    m_gpPaused(false)
-{ }
+Game::Game() :
+        m_client(get_client_with_context(*this)),
+        m_menu(std::bind(
+                static_cast<void (Game::*)(GuiMenuBase &)>(&Game::OnItemSelect), this, _1)
+        ),
+        m_exitmenu(std::bind(
+                static_cast<void (Game::*)(GuiMenuBase &)>(&Game::OnItemSelect), this, _1)
+        ),
+        m_pausemenu(std::bind(
+                static_cast<void (Game::*)(GuiMenuBase &)>(&Game::OnItemSelect), this, _1
+        )),
+        m_bDone(false),
+        m_activeMenu(&m_menu),
+        m_gp(nullptr),
+        m_gpPaused(false) {}
 
-int Game::Run()
-{
+int Game::Run() {
     glViewport(0, 0, 800, 600);
     glClearColor(1.0, 1.0, 0.8, 1.0);
     glClearDepth(1.0);
@@ -179,15 +164,15 @@ int Game::Run()
     ALCdevice *dev;
     ALCcontext *alc;
 
-    dev = alcOpenDevice(NULL);
+    dev = alcOpenDevice(nullptr);
     if (dev) {
-        alc = alcCreateContext(dev, NULL);
+        alc = alcCreateContext(dev, nullptr);
 
         alcMakeContextCurrent(alc);
 
         alListener3f(AL_POSITION, 0, 0, 1.0f);
         alListener3f(AL_VELOCITY, 0, 0, 0);
-        ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+        ALfloat listenerOri[] = {0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f};
         alListenerfv(AL_ORIENTATION, listenerOri);
 
         std::cout << alGetString(alGetError()) << std::endl;
@@ -211,8 +196,7 @@ int Game::Run()
         std::cout << source << " " << buffer << std::endl;
     }
 
-    while (!m_bDone)
-    {
+    while (!m_bDone) {
         //ALint state;
         //alGetSourcei(source, AL_SOURCE_STATE, &state);
         //std::cout << state << std::endl;
@@ -222,27 +206,23 @@ int Game::Run()
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, mainFbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (m_gp)
-        {
-            if (!m_gpPaused)
-            {
+        if (m_gp) {
+            if (!m_gpPaused) {
                 m_gp->Update();
             }
             m_gp->Render();
         }
 
-        if (m_activeMenu)
-        {
+        if (m_activeMenu) {
             m_activeMenu->Render();
         }
 
-        if (glfwGetTime() - time >= 1)
-        {
-            fps = framecount / (float)(glfwGetTime() - time);
+        if (glfwGetTime() - time >= 1) {
+            fps = framecount / (float) (glfwGetTime() - time);
             time = glfwGetTime();
             framecount = 0;
         }
-        framecount ++;
+        framecount++;
 
         std::ostringstream strfps;
         strfps << "fps:" << fps;
@@ -259,123 +239,101 @@ int Game::Run()
     return 0;
 }
 
-void Game::onWindowClose()
-{
+void Game::onWindowClose() {
     //m_bDone = true;
 }
 
-void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/)
-{
-    if (m_gp)
-    {
-        switch (key)
-        {
-        case Client::KEY_ESCAPE:
-            if (m_gpPaused)
-            {
-                m_gpPaused = false;
-                m_activeMenu = nullptr;
-            }
-            else
-            {
-                m_gpPaused = true;
-                m_activeMenu = &m_pausemenu;
-            }
-            break;
+void Game::onKeyPress(Client::KeyCode key, int /*scancode*/, int /*mods*/) {
+    if (m_gp) {
+        switch (key) {
+            case Client::KEY_ESCAPE:
+                if (m_gpPaused) {
+                    m_gpPaused = false;
+                    m_activeMenu = nullptr;
+                } else {
+                    m_gpPaused = true;
+                    m_activeMenu = &m_pausemenu;
+                }
+                break;
 
-        default:
-            ;
+            default:;
         }
     }
 
-    if (m_activeMenu)
-    {
-        switch (key)
-        {
-        case Client::KEY_UP:
-            m_activeMenu->navigatePrevious();
-            break;
+    if (m_activeMenu) {
+        switch (key) {
+            case Client::KEY_UP:
+                m_activeMenu->navigatePrevious();
+                break;
 
-        case Client::KEY_DOWN:
-            m_activeMenu->navigateNext();
-            break;
+            case Client::KEY_DOWN:
+                m_activeMenu->navigateNext();
+                break;
 
-        case Client::KEY_RETURN:
-            m_activeMenu->select();
-            break;
+            case Client::KEY_RETURN:
+                m_activeMenu->select();
+                break;
 
-        default:
-            ;
+            default:;
         }
     }
 }
 
-void Game::onCursorMove(float, float)
-{
+void Game::onCursorMove(float, float) {
 }
 
-void Game::OnItemSelect(GuiMenuBase &/*o*/)
-{
+void Game::OnItemSelect(GuiMenuBase &/*o*/) {
     std::cout << "bound function" << std::endl;
 }
 
-void Game::OnItemSelect(GuiMainMenu &/*o*/)
-{
+void Game::OnItemSelect(GuiMainMenu &/*o*/) {
     std::cout << "bound function 2" << std::endl;
 }
 
-void Game::onItemSelect(GuiExitMenu& /*o*/)
-{
+void Game::onItemSelect(GuiExitMenu & /*o*/) {
 }
 
-void Game::onItemSelect(GuiMainMenu& o)
-{
+void Game::onItemSelect(GuiMainMenu &o) {
     std::cout << "mainmenu" << std::endl;
-    switch (o.getSelectedItem())
-    {
-    case 0:
-        m_activeMenu = nullptr;
-        m_gpPaused = false;
-        m_gp = new GamePlay;
-        break;
+    switch (o.getSelectedItem()) {
+        case 0:
+            m_activeMenu = nullptr;
+            m_gpPaused = false;
+            m_gp = new GamePlay;
+            break;
 
-    case 4:
-        m_activeMenu = &m_exitmenu;
-        break;
+        case 4:
+            m_activeMenu = &m_exitmenu;
+            break;
     }
 }
 
-void Game::onItemSelect(GuiMenuBase& o)
-{
+void Game::onItemSelect(GuiMenuBase &o) {
     std::cout << "generic menu" << std::endl;
 
-    if (&o == &m_exitmenu)
-    {
-        switch (o.getSelectedItem())
-        {
-        case 0:
-            m_bDone = true;
-            break;
+    if (&o == &m_exitmenu) {
+        switch (o.getSelectedItem()) {
+            case 0:
+                m_bDone = true;
+                break;
 
-        case 1:
-            m_activeMenu = &m_menu;
-            break;
+            case 1:
+                m_activeMenu = &m_menu;
+                break;
         }
     }
 
-    if (&o == &m_pausemenu)
-    {
-        switch (o.getSelectedItem())
-        {
-        case 0:
-            m_gpPaused = false;
-            m_activeMenu = nullptr;
-            break;
+    if (&o == &m_pausemenu) {
+        switch (o.getSelectedItem()) {
+            case 0:
+                m_gpPaused = false;
+                m_activeMenu = nullptr;
+                break;
 
-        case 1:
-            m_activeMenu = &m_menu;
-            delete m_gp;
-            break;
+            case 1:
+                m_activeMenu = &m_menu;
+                delete m_gp;
+                break;
         }
     }
 }

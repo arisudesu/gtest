@@ -3,20 +3,17 @@
 #include <iostream>
 #include <vector>
 
-Shader::Shader():
-    handle(glCreateProgram())
-{
+Shader::Shader() :
+        handle(glCreateProgram()) {
 }
 
-Shader::~Shader()
-{
+Shader::~Shader() {
     glDeleteProgram(handle);
 }
 
-void Shader::attach(GLenum shader_type, const std::string source)
-{
+void Shader::attach(GLenum shader_type, const std::string source) {
     GLuint shader = glCreateShader(shader_type);
-    const GLchar* csource = source.c_str();
+    const GLchar *csource = source.c_str();
     glShaderSource(shader, 1, &csource, 0);
     glCompileShader(shader);
     glAttachShader(handle, shader);
@@ -28,8 +25,7 @@ void Shader::attach(GLenum shader_type, const std::string source)
     std::cout << std::string(buffer.begin(), buffer.end()) << std::endl;
 }
 
-void Shader::attachFile(GLenum shader_type, const std::string filename)
-{
+void Shader::attachFile(GLenum shader_type, const std::string filename) {
     std::ifstream file(filename);
     std::string source = "", line = "";
 
@@ -42,8 +38,7 @@ void Shader::attachFile(GLenum shader_type, const std::string filename)
     attach(shader_type, source);
 }
 
-void Shader::link()
-{
+void Shader::link() {
     glLinkProgram(handle);
 
     GLint loglen;
@@ -54,17 +49,14 @@ void Shader::link()
 
 }
 
-void Shader::use()
-{
+void Shader::use() {
     glUseProgram(handle);
 }
 
-GLint Shader::getAttributeLocation(const std::string name)
-{
+GLint Shader::getAttributeLocation(const std::string name) {
     return glGetAttribLocation(handle, name.c_str());
 }
 
-GLint Shader::getUniformLocation(const std::string name)
-{
+GLint Shader::getUniformLocation(const std::string name) {
     return glGetUniformLocation(handle, name.c_str());
 }

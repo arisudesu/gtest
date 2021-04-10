@@ -2,39 +2,45 @@
 #define CLIENT_H
 
 #define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
 #include <string>
 
 class IClientEventHandler;
-class Client
-{
-    GLFWwindow* m_window;
-    IClientEventHandler& m_handler;
 
-    struct GLFWContainer
-    {
+class Client {
+    GLFWwindow *m_window;
+    IClientEventHandler &m_handler;
+
+    struct GLFWContainer {
         GLFWContainer();
+
         ~GLFWContainer();
     };
+
     static const GLFWContainer m_glfw;
 
 private:
-    Client(const Client&) = delete;
-    const Client& operator=(const Client&);
+    const Client &operator=(const Client &);
 
 public:
-    Client(const int width, const int height, const std::string& title, IClientEventHandler& handler);
-    Client(Client&&);
+    Client(const Client &) = delete;
+
+    Client(int width, int height, const std::string &title, IClientEventHandler &handler);
+
+    Client(Client &&) noexcept;
+
     ~Client();
 
-    bool Initialize(const int width, const int height, const std::string& title);
+    bool Initialize(int width, int height, const std::string &title);
+
     void Terminate();
 
     void ProcessEvents();
+
     void SwapBuffers();
 
-    enum KeyCode
-    {
+    enum KeyCode {
         KEY_W = 87,
         KEY_S = 83,
         KEY_A = 65,
@@ -50,13 +56,15 @@ public:
 
 };
 
-class IClientEventHandler
-{
+class IClientEventHandler {
 public:
     virtual void onWindowClose() = 0;
+
     virtual void onKeyPress(Client::KeyCode key, int scancode, int mods) = 0;
+
     virtual void onCursorMove(float x, float y) = 0;
-    virtual ~IClientEventHandler() {};
+
+    virtual ~IClientEventHandler() = default;
 };
 
 #endif // CLIENT_H

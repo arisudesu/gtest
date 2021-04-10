@@ -5,18 +5,24 @@
 
 using namespace gl;
 
-class Shader
-{
+class Shader {
     GLuint handle;
 
 public:
     Shader();
+
     ~Shader();
+
     void attach(GLenum shader_type, const std::string source);
+
     void attachFile(GLenum shader_type, const std::string filename);
+
     void link();
+
     void use();
+
     GLint getAttributeLocation(const std::string name);
+
     GLint getUniformLocation(const std::string name);
 };
 
