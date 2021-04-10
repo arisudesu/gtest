@@ -38,4 +38,5 @@ target_link_libraries(
     ${FT2_LIBRARIES}
     ${GLBINDING_LIBRARIES}
     ${OPENAL_LIBRARIES}
+    glbinding::glbinding
 )

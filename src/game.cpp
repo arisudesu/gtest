@@ -141,7 +141,7 @@ int Game::Run()
     glCullFace(GL_BACK);*/
 
     // TODO: use std::chrono
-    double time = clibraries::glfwGetTime();
+    double time = glfwGetTime();
     unsigned int framecount = 0;
     float fps = 0;
 
@@ -180,35 +180,36 @@ int Game::Run()
     ALCcontext *alc;
 
     dev = alcOpenDevice(NULL);
-    alc = alcCreateContext(dev, NULL);
+    if (dev) {
+        alc = alcCreateContext(dev, NULL);
 
-    alcMakeContextCurrent(alc);
+        alcMakeContextCurrent(alc);
 
+        alListener3f(AL_POSITION, 0, 0, 1.0f);
+        alListener3f(AL_VELOCITY, 0, 0, 0);
+        ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
+        alListenerfv(AL_ORIENTATION, listenerOri);
 
-    alListener3f(AL_POSITION, 0, 0, 1.0f);
-    alListener3f(AL_VELOCITY, 0, 0, 0);
-    ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-    alListenerfv(AL_ORIENTATION, listenerOri);
+        std::cout << alGetString(alGetError()) << std::endl;
 
-    std::cout << alGetString(alGetError()) << std::endl;
+        ALuint source;
+        alGenSources(1, &source);
+        alSourcef(source, AL_PITCH, 1);
+        alSourcef(source, AL_GAIN, 1);
+        alSource3f(source, AL_POSITION, 0, 0, 0);
+        alSource3f(source, AL_VELOCITY, 0, 0, 0);
+        alSourcei(source, AL_LOOPING, AL_TRUE);
+        std::cout << alGetString(alGetError()) << std::endl;
 
-    ALuint source;
-    alGenSources(1, &source);
-    alSourcef(source, AL_PITCH, 1);
-    alSourcef(source, AL_GAIN, 1);
-    alSource3f(source, AL_POSITION, 0, 0, 0);
-    alSource3f(source, AL_VELOCITY, 0, 0, 0);
-    alSourcei(source, AL_LOOPING, AL_TRUE);
-    std::cout << alGetString(alGetError()) << std::endl;
+        ALuint buffer = loadWavFile("data/audio/menu.wav");
 
-    ALuint buffer = loadWavFile("data/audio/menu.wav");
+        std::cout << alGetString(alGetError()) << std::endl;
 
-    std::cout << alGetString(alGetError()) << std::endl;
-
-    alSourcei(source, AL_BUFFER, buffer);
-    alSourcePlay(source);
-    std::cout << alGetString(alGetError()) << std::endl;
-    std::cout << source << " " << buffer << std::endl;
+        alSourcei(source, AL_BUFFER, buffer);
+        alSourcePlay(source);
+        std::cout << alGetString(alGetError()) << std::endl;
+        std::cout << source << " " << buffer << std::endl;
+    }
 
     while (!m_bDone)
     {
@@ -235,10 +236,10 @@ int Game::Run()
             m_activeMenu->Render();
         }
 
-        if (clibraries::glfwGetTime() - time >= 1)
+        if (glfwGetTime() - time >= 1)
         {
-            fps = framecount / (float)(clibraries::glfwGetTime() - time);
-            time = clibraries::glfwGetTime();
+            fps = framecount / (float)(glfwGetTime() - time);
+            time = glfwGetTime();
             framecount = 0;
         }
         framecount ++;

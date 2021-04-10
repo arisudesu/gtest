@@ -1,8 +1,6 @@
 #define GLEQ_IMPLEMENTATION
 #include "include/client.hpp"
 
-using namespace clibraries;
-
 #include "include/gleq.h"
 #include <stdexcept>
 

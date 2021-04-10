@@ -3,11 +3,9 @@
 
 #include "include/shader.hpp"
 
-namespace clibraries
-{
-    #include <ft2build.h>
-    #include FT_FREETYPE_H
-}
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include <glbinding/gl/gl.h>
 
 #include <string>
@@ -17,8 +15,8 @@ using namespace gl;
 class Font
 {
     unsigned int m_glyph_size;
-    clibraries::FT_Library m_ft;
-    clibraries::FT_Face m_face;
+    FT_Library m_ft;
+    FT_Face m_face;
     Font(const Font&);
     const Font& operator=(const Font&);
 public:
